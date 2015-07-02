@@ -14,7 +14,7 @@ import 'package:isomorphic_dart/src/apis.dart';
 main(List<String> args) async {
   var parser = new ArgParser();
   parser
-      ..addOption('serve-dir', defaultsTo: "web")
+      ..addOption('serve-dir', defaultsTo: "build/web")
       ..addOption("host", defaultsTo: "localhost")
       ..addOption("port", defaultsTo: "8080")
       ..addFlag("app-engine", defaultsTo: false);
