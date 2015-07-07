@@ -26,9 +26,16 @@ class _ApplicationView extends Component {
         });
 
     _selectMovie.stream
-        .listen((movie) => _updates.add(showMovie(movie)));
+        .flatMapLatest((movie) => new EventStream.fromFuture(_getMovie(movie.id)))
+        .listen((movie) {
+          _updates.add(showMovie(movie));
+        });
   }
 
+  Future _getMovie(String id) async {
+    var movie = await _moviesApi.getMovie(id);
+    return new Movie.fromJson(movie);
+  }
   Future<Iterable<Movie>> _searchMovies(String term) async {
     var results = await _moviesApi.search(term);
     return results.map((json) => new Movie.fromJson(json));
@@ -39,12 +46,12 @@ class _ApplicationView extends Component {
   }
 
   _renderPath(String path, Map data) {
-    if (path == "") {
+    if (path == "/") {
       return homeView(_search);
-    } else if (path.startsWith("search")) {
+    } else if (path.startsWith("/search")) {
       var movies = data["movies"].map((json) => new Movie.fromJson(json));
       return searchResultsView(data["term"], movies, _search, _selectMovie);
-    } else if (path.startsWith("movie")) {
+    } else if (path.startsWith("/movie")) {
       var movie = new Movie.fromJson(data["movie"]);
       return movieDetailView(movie);
     } else {
